@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #6b73ff, #000dff);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('desktop.png');
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #f1f1f1;
+        }
+        .input-group {
+            margin: 20px 0;
+            position: relative;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            color: #333;
+        }
+        .btn {
+            width: 100%;
+            background: linear-gradient(90deg, #6b73ff, #000dff);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: transform 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            color: #fff;
+            display: none;
+        }
+        .success {
+            background-color: #4CAF50;
+        }
+        .error {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="login-container">
+        <h1>Welcome!</h1>
+        <div class="input-group">
+            <input type="email" id="email" placeholder="Email" required>
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Password" required>
+        </div>
+        <button class="btn" id="login-btn">Login</button>
+        <button class="btn" id="guest-btn">Play as Guest</button>
+        <p>Don't have an account? <a href="#" id="sign-up-link" style="color: #fff;">Sign up</a></p>
+    </div>
+
+    <div class="container" id="signup-container" style="display: none;">
+        <h1>Sign Up</h1>
+        <div class="input-group">
+            <input type="text" id="first-name" placeholder="First Name" required>
+        </div>
+        <div class="input-group">
+            <input type="text" id="last-name" placeholder="Last Name" required>
+        </div>
+        <div class="input-group">
+            <input type="text" id="username" placeholder="Username" required>
+        </div>
+        <div class="input-group">
+            <input type="email" id="signup-email" placeholder="Email" required>
+        </div>
+        <div class="input-group">
+            <input type="password" id="signup-password" placeholder="Password" required>
+        </div>
+        <button class="btn" id="signup-btn">Sign Up</button>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        const token = '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';
+        const repoOwner = 'rutujdhodapkar';
+        const repoName = 'login-page-';
+        const filePath = 'userinfo.csv';
+
+        function displayNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        document.getElementById('guest-btn').addEventListener('click', function() {
+            const randomGuestUsername = `Guest_${Math.floor(Math.random() * 10000)}`;
+            displayNotification(`${randomGuestUsername}!`, 'success');
+            setTimeout(() => {
+                window.location.href = `index.html?username=${randomGuestUsername}`;
+            }, 3000);
+        });
+
+        document.getElementById('login-btn').addEventListener('click', function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+                headers: {
+                    'Authorization': `token ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const content = atob(data.content);
+                const users = content.split('\n').map(line => line.split(','));
+                const user = users.find(user => user[3] === email && user[4] === password);
+
+                if (user) {
+                    displayNotification('Login successful!', 'success');
+                    setTimeout(() => {
+                        const username = user[2]; // Assuming username is the third column in the CSV
+                        window.location.href = `index.html?username=${username}`;
+                    }, 3000);
+                } else {
+                    displayNotification('Invalid email or password!', 'error');
+                }
+            })
+            .catch(error => {
+                displayNotification('Error reading user info!', 'error');
+            });
+        });
+
+        document.getElementById('sign-up-link').addEventListener('click', function() {
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('signup-container').style.display = 'block';
+        });
+
+        document.getElementById('signup-btn').addEventListener('click', function() {
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            if (!firstName || !lastName || !username || !email || !password) {
+                displayNotification('All fields are required!', 'error');
+                return;
+            }
+
+            const newRow = `${firstName},${lastName},${username},${email},${password}\n`;
+
+            fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+                headers: {
+                    'Authorization': `token ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const currentContent = atob(data.content);
+                const updatedContent = currentContent + newRow;
+                const encodedContent = btoa(updatedContent);
+
+                return fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Add new user',
+                        content: encodedContent,
+                        sha: data.sha
+                    })
+                });
+            })
+            .then(response => {
+                if (response.ok) {
+                    displayNotification('Sign up successful!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 3000);
+                } else {
+                    displayNotification('Error saving user info!', 'error');
+                }
+            })
+            .catch(error => {
+                displayNotification('Error saving user info!', 'error');
+            });
+        });
+    </script>
+</body>
+</html>
