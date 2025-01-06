@@ -26,7 +26,7 @@
         }
         .container {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+            border-radius: 10px; /* Changed to make corners little curve */
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
             max-width: 400px;
             width: 100%;
@@ -47,7 +47,7 @@
             width: 100%;
             padding: 15px;
             border: none;
-            border-radius: 10px;
+            border-radius: 10px; /* Changed to make corners little curve */
             font-size: 1em;
             color: #333;
         }
@@ -61,7 +61,7 @@
             color: #fff;
             border: none;
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 10px; /* Changed to make corners little curve */
             font-size: 1.1em;
             cursor: pointer;
             margin: 15px 0;
@@ -78,6 +78,7 @@
             align-items: center;
             justify-content: center;
             padding: 15px;
+            border-radius: 10px; /* Changed to make corners little curve */
         }
         .btn-google img {
             width: 20px;
@@ -100,7 +101,7 @@
             top: 20px;
             right: 20px;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 10px; /* Changed to make corners little curve */
             display: none;
         }
         .notification.error {
@@ -114,7 +115,7 @@
         /* google login disable message */
         .notification.service {   
             background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+            border-radius: 10px; /* Changed to make corners little curve */
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
             font-size: 1.5em;
             text-align: center;
@@ -125,7 +126,6 @@
             margin: 0 auto;
             padding: 20px;
             backdrop-filter: blur(10px);
-            border-radius: 50px; /* Added round borders */
         }
     </style>
 </head>
@@ -266,6 +266,17 @@
             if (event.key >= 'F1' && event.key <= 'F12') {
                 event.preventDefault();
             }
+        });
+
+        // Show message "Project is under development" for 3 seconds on page load
+        window.addEventListener('load', function() {
+            const notification = document.getElementById('notification');
+            notification.textContent = 'Project is under development';
+            notification.className = 'notification service';
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
         });
     </script>
 </body>
