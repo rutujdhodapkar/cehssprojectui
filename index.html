@@ -111,6 +111,22 @@
             background-color: #28a745;
             color: white;
         }
+        /* google login disable message */
+        .notification.service {   
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            font-size: 1.5em;
+            text-align: center;
+            width: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border-radius: 50px; /* Added round borders */
+        }
     </style>
 </head>
 <body>
@@ -214,8 +230,13 @@
         });
 
         document.getElementById('google-login-btn').addEventListener('click', function() {
-            // Redirect to Google login page
-            window.location.href = 'https://accounts.google.com/signin/v2/identifier?service=mail&continue=https://mail.google.com/mail/&flowName=GlifWebSignIn&flowEntry=ServiceLogin';
+            const notification = document.getElementById('notification');
+            notification.textContent = 'Service not enabled yet';
+            notification.className = 'notification service';
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
         });
 
         function validateEmail(email) {
