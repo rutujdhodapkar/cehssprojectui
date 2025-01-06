@@ -1,7 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
+    <style>
+        #small-screen-message {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ffcc00;
+            color: #000;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+    </style>
+    <script>
+        function checkScreenSize() {
+            const messageElement = document.getElementById('small-screen-message');
+            if (window.innerWidth < 600) {
+                messageElement.style.display = 'block';
+                setTimeout(() => {
+                    messageElement.style.display = 'none';
+                }, 10000); // Hide after 10 seconds
+            } else {
+                messageElement.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('resize', checkScreenSize);
+        window.addEventListener('load', checkScreenSize);
+    </script>
+    <div id="small-screen-message">Switch to desktop for better experience</div>
     <script>
         document.addEventListener('contextmenu', function(event) {
             event.preventDefault();
@@ -22,13 +53,16 @@
             align-items: center;
             background: #1a1a2e;
             font-family: 'Roboto', sans-serif;
-            overflow: hidden;
+            overflow: auto; /* Changed to allow scrolling if elements are out of page */
+            flex-wrap: wrap; /* Added to allow wrapping of elements */
         }
 
         .container {
             display: flex;
             flex-direction: row;
             align-items: flex-start;
+            flex-wrap: wrap; /* Added to allow wrapping of elements */
+            justify-content: center; /* Center elements horizontally */
         }
 
         .game-container {
@@ -36,6 +70,7 @@
             width: 80vmin;
             height: 80vmin;
             perspective: 1000px;
+            margin: 10px; /* Added margin for spacing */
         }
 
         .welcome-text {
@@ -128,6 +163,7 @@
             flex-direction: column;
             margin-left: 20px;
             width: 80vmin;
+            margin: 10px; /* Added margin for spacing */
         }
 
         .game-info {
