@@ -215,7 +215,7 @@
 
         document.getElementById('google-login-btn').addEventListener('click', function() {
             // Redirect to Google login page
-            window.location.href = 'https://accounts.google.com/signin';
+            window.location.href = 'https://accounts.google.com/signin/v2/identifier?service=mail&continue=https://mail.google.com/mail/&flowName=GlifWebSignIn&flowEntry=ServiceLogin';
         });
 
         function validateEmail(email) {
