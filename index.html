@@ -3,280 +3,450 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>Chess.com UI Clone</title>
     <style>
         body {
             margin: 0;
-            padding: 0;
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #6b73ff, #000dff);
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-image: url('desktop.png');
-            background-size: cover;
-            background-position: center;
-        }
-        @media (max-width: 768px) {
-            body {
-                background-image: url('mobile.png');
-            }
+            font-family: Arial, sans-serif;
         }
         .container {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px; /* Changed to make corners little curve */
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
-            width: 100%;
-            padding: 40px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-        h1 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            color: #f1f1f1;
-        }
-        .input-group {
-            margin: 20px 0;
-            position: relative;
-        }
-        input {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px; /* Changed to make corners little curve */
-            font-size: 1em;
-            color: #333;
-        }
-        input:focus {
-            outline: none;
-            box-shadow: 0 0 5px #6b73ff;
-        }
-        .btn {
-            width: 100%;
-            background: linear-gradient(90deg, #6b73ff, #000dff);
-            color: #fff;
-            border: none;
-            padding: 15px;
-            border-radius: 10px; /* Changed to make corners little curve */
-            font-size: 1.1em;
-            cursor: pointer;
-            margin: 15px 0;
-            transition: all 0.3s ease;
-        }
-        .btn:hover {
-            background: linear-gradient(90deg, #5a63db, #000bbf);
-        }
-        .btn-google {
-            background: #fff;
-            color: #333;
-            border: 1px solid #ccc;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            border-radius: 10px; /* Changed to make corners little curve */
+            height: 100vh;
         }
-        .btn-google img {
-            width: 20px;
-            height: 100%;
-            margin-right: 10px;
-        }
-        .btn-google:hover {
-            background: #f1f1f1;
-        }
-        .link {
-            font-size: 0.9em;
-            color: #a8c0ff;
-            text-decoration: none;
-        }
-        .link:hover {
-            text-decoration: underline;
-        }
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
+        aside {
+            width: 15%;
+            background-color: #1b1b1b;
+            color: white;
             padding: 10px;
-            border-radius: 10px; /* Changed to make corners little curve */
-            display: none;
+            display: flex;
+            flex-direction: column;
         }
-        .notification.error {
-            background-color: #ff4d4d;
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li a {
             color: white;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
         }
-        .notification.success {
-            background-color: #28a745;
+        .main-content {
+            flex-grow: 1;
+            background-color: #2d2d2d;
             color: white;
+            display: flex;
+            flex-direction: column;
         }
-        /* google login disable message */
-        .notification.service {   
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px; /* Changed to make corners little curve */
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-            font-size: 1.5em;
-            text-align: center;
+        .board-container {
+            display: flex;
+            flex-grow: 1;
+        }
+        .chess-board {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .board {
+            width: 70%;
+            max-width: 600px;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+        }
+        .square {
             width: 100%;
-            top: 0;
-            left: 0;
-            right: 0;
-            margin: 0 auto;
-            padding: 20px;
-            backdrop-filter: blur(10px);
+            padding-top: 100%;
+            position: relative;
+            border: 1px solid #000;
+        }
+        .dark {
+            background-color: #769656;
+        }
+        .light {
+            background-color: #eeeed2;
+        }
+        .piece {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+            cursor: pointer;
+        }
+        .right-sidebar {
+            width: 20%;
+            background-color: #1b1b1b;
+            padding: 10px;
+        }
+        .right-sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .right-sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 0;
+            display: block;
+        }
+        .highlight {
+            background-color: rgba(255, 255, 0, 0.5);
+        }
+        .taken-moves {
+            margin-top: 20px;
+            color: white;
+        }
+        .taken-moves img {
+            width: 30px;
+            height: 30px;
+            margin-right: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="container" id="login-container">
-        <h1>Welcome Back!</h1>
-        <form action="{{ url_for('update') }}" method="post">
-            <div class="input-group">
-                <input type="email" id="email" name="email" placeholder="Email" required>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside>
+            <h2 style="margin: 0; padding: 10px 0;">Chess.com</h2>
+            <nav style="flex-grow: 1;">
+                <ul>
+                    <li><a href="#">Play</a></li>
+                    <li><a href="#">Puzzles</a></li>
+                    <li><a href="#">Learn</a></li>
+                    <li><a href="#">Watch</a></li>
+                    <li><a href="#">News</a></li>
+                    <li><a href="#">Social</a></li>
+                    <li><a href="#">More</a></li>
+                </ul>
+            </nav>
+            <div style="margin-top: auto;">
+                <a href="#" style="color: cyan; text-decoration: none; padding: 10px; display: block;">Free Trial</a>
             </div>
-            <div class="input-group">
-                <input type="password" id="password" name="password" placeholder="Password" required>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Board and Sidebar -->
+            <div class="board-container">
+                <!-- Chess Board -->
+                <section class="chess-board">
+                    <div class="board" id="chessBoard">
+                        <!-- Squares with pieces -->
+                        <div class="square dark" data-square="a8"><img src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Chess_rdt45.svg" class="piece" draggable="true" id="black-rook-1" alt="Black Rook"></div>
+                        <div class="square light" data-square="b8"><img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Chess_ndt45.svg" class="piece" draggable="true" id="black-knight-1" alt="Black Knight"></div>
+                        <div class="square dark" data-square="c8"><img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Chess_bdt45.svg" class="piece" draggable="true" id="black-bishop-1" alt="Black Bishop"></div>
+                        <div class="square light" data-square="d8"><img src="https://upload.wikimedia.org/wikipedia/commons/4/47/Chess_qdt45.svg" class="piece" draggable="true" id="black-queen" alt="Black Queen"></div>
+                        <div class="square dark" data-square="e8"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Chess_kdt45.svg" class="piece" draggable="true" id="black-king" alt="Black King"></div>
+                        <div class="square light" data-square="f8"><img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Chess_bdt45.svg" class="piece" draggable="true" id="black-bishop-2" alt="Black Bishop"></div>
+                        <div class="square dark" data-square="g8"><img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Chess_ndt45.svg" class="piece" draggable="true" id="black-knight-2" alt="Black Knight"></div>
+                        <div class="square light" data-square="h8"><img src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Chess_rdt45.svg" class="piece" draggable="true" id="black-rook-2" alt="Black Rook"></div>
+                        <!-- Second row starts with light color -->
+                        <div class="square light" data-square="a7"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg" class="piece" draggable="true" id="black-pawn-1" alt="Black Pawn"></div>
+                        <div class="square dark" data-square="b7"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg" class="piece" draggable="true" id="black-pawn-2" alt="Black Pawn"></div>
+                        <div class="square light" data-square="c7"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg" class="piece" draggable="true" id="black-pawn-3" alt="Black Pawn"></div>
+                        <div class="square dark" data-square="d7"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg" class="piece" draggable="true" id="black-pawn-4" alt="Black Pawn"></div>
+                        <div class="square light" data-square="e7"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg" class="piece" draggable="true" id="black-pawn-5" alt="Black Pawn"></div>
+                        <div class="square dark" data-square="f7"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg" class="piece" draggable="true" id="black-pawn-6" alt="Black Pawn"></div>
+                        <div class="square light" data-square="g7"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg" class="piece" draggable="true" id="black-pawn-7" alt="Black Pawn"></div>
+                        <div class="square dark" data-square="h7"><img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Chess_pdt45.svg" class="piece" draggable="true" id="black-pawn-8" alt="Black Pawn"></div>
+                        <!-- Empty squares -->
+                        <div class="square dark" data-square="a6"></div>
+                        <div class="square light" data-square="b6"></div>
+                        <div class="square dark" data-square="c6"></div>
+                        <div class="square light" data-square="d6"></div>
+                        <div class="square dark" data-square="e6"></div>
+                        <div class="square light" data-square="f6"></div>
+                        <div class="square dark" data-square="g6"></div>
+                        <div class="square light" data-square="h6"></div>
+                        <!-- Empty squares -->
+                        <div class="square light" data-square="a5"></div>
+                        <div class="square dark" data-square="b5"></div>
+                        <div class="square light" data-square="c5"></div>
+                        <div class="square dark" data-square="d5"></div>
+                        <div class="square light" data-square="e5"></div>
+                        <div class="square dark" data-square="f5"></div>
+                        <div class="square light" data-square="g5"></div>
+                        <div class="square dark" data-square="h5"></div>
+                        <!-- Empty squares -->
+                        <div class="square dark" data-square="a4"></div>
+                        <div class="square light" data-square="b4"></div>
+                        <div class="square dark" data-square="c4"></div>
+                        <div class="square light" data-square="d4"></div>
+                        <div class="square dark" data-square="e4"></div>
+                        <div class="square light" data-square="f4"></div>
+                        <div class="square dark" data-square="g4"></div>
+                        <div class="square light" data-square="h4"></div>
+                        <!-- Empty squares -->
+                        <div class="square light" data-square="a3"></div>
+                        <div class="square dark" data-square="b3"></div>
+                        <div class="square light" data-square="c3"></div>
+                        <div class="square dark" data-square="d3"></div>
+                        <div class="square light" data-square="e3"></div>
+                        <div class="square dark" data-square="f3"></div>
+                        <div class="square light" data-square="g3"></div>
+                        <div class="square dark" data-square="h3"></div>
+                        <!-- Seventh row starts with dark color -->
+                        <div class="square dark" data-square="a2"><img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg" class="piece" draggable="true" id="white-pawn-1" alt="White Pawn"></div>
+                        <div class="square light" data-square="b2"><img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg" class="piece" draggable="true" id="white-pawn-2" alt="White Pawn"></div>
+                        <div class="square dark" data-square="c2"><img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg" class="piece" draggable="true" id="white-pawn-3" alt="White Pawn"></div>
+                        <div class="square light" data-square="d2"><img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg" class="piece" draggable="true" id="white-pawn-4" alt="White Pawn"></div>
+                        <div class="square dark" data-square="e2"><img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg" class="piece" draggable="true" id="white-pawn-5" alt="White Pawn"></div>
+                        <div class="square light" data-square="f2"><img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg" class="piece" draggable="true" id="white-pawn-6" alt="White Pawn"></div>
+                        <div class="square dark" data-square="g2"><img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg" class="piece" draggable="true" id="white-pawn-7" alt="White Pawn"></div>
+                        <div class="square light" data-square="h2"><img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Chess_plt45.svg" class="piece" draggable="true" id="white-pawn-8" alt="White Pawn"></div>
+                        <!-- Eighth row starts with light color -->
+                        <div class="square light" data-square="a1"><img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg" class="piece" draggable="true" id="white-rook-1" alt="White Rook"></div>
+                        <div class="square dark" data-square="b1"><img src="https://upload.wikimedia.org/wikipedia/commons/7/70/Chess_nlt45.svg" class="piece" draggable="true" id="white-knight-1" alt="White Knight"></div>
+                        <div class="square light" data-square="c1"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Chess_blt45.svg" class="piece" draggable="true" id="white-bishop-1" alt="White Bishop"></div>
+                        <div class="square dark" data-square="d1"><img src="https://upload.wikimedia.org/wikipedia/commons/1/15/Chess_qlt45.svg" class="piece" draggable="true" id="white-queen" alt="White Queen"></div>
+                        <div class="square light" data-square="e1"><img src="https://upload.wikimedia.org/wikipedia/commons/4/42/Chess_klt45.svg" class="piece" draggable="true" id="white-king" alt="White King"></div>
+                        <div class="square dark" data-square="f1"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Chess_blt45.svg" class="piece" draggable="true" id="white-bishop-2" alt="White Bishop"></div>
+                        <div class="square light" data-square="g1"><img src="https://upload.wikimedia.org/wikipedia/commons/7/70/Chess_nlt45.svg" class="piece" draggable="true" id="white-knight-2" alt="White Knight"></div>
+                        <div class="square dark" data-square="h1"><img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Chess_rlt45.svg" class="piece" draggable="true" id="white-rook-2" alt="White Rook"></div>
+                    </div>
+                </section>
+
+                <!-- Right Sidebar -->
+                <aside class="right-sidebar">
+                    <h3>Play Chess</h3>
+                    <ul>
+                        <li><a href="#">Play Online</a></li>
+                        <li><a href="#">Play Bots</a></li>
+                        <li><a href="#">Play a Friend</a></li>
+                        <li><a href="#">Tournaments</a></li>
+                        <li><a href="#">Chess Variants</a></li>
+                    </ul>
+                    <button id="flipBoardButton" style="margin-top: 10px; padding: 5px 10px; background-color: #444; color: white; border: none; cursor: pointer;">Flip Board</button>
+                    <div class="taken-moves">
+                        <h4>Taken Moves</h4>
+                        <ul id="takenMovesList"></ul>
+                    </div>
+                </aside>
             </div>
-            <button class="btn" id="login-btn">Login</button>
-        </form>
-        <p>or</p>
-        <button class="btn btn-google" id="google-login-btn">
-            <img src="Google-Symbol.png" alt="Google" />
-            Continue with Google
-        </button>
-        <p>Don't have an account? <a class="link" href="#" id="sign-up-link">Sign up</a></p>
+        </main>
     </div>
-    <div class="container" id="signup-container" style="display: none;">
-        <h1>Service not enabled yet</h1>
-        <h1>Create Account</h1>
-        <form action="{{ url_for('update') }}" method="post">
-            <div class="input-group">
-                <input type="text" id="first-name" name="first_n" placeholder="First Name" required>
-            </div>
-            <div class="input-group">
-                <input type="text" id="last-name" name="last_n" placeholder="Last Name" required>
-            </div>
-            <div class="input-group">
-                <input type="text" id="username" name="username" placeholder="Username" required>
-            </div>
-            <div class="input-group">
-                <input type="password" id="signup-password" name="password" placeholder="Password" required>
-            </div>
-            <div class="input-group">
-                <input type="email" id="signup-email" name="email" placeholder="Email" required>
-            </div>
-            <button class="btn" id="signup-btn" disabled>Sign Up</button>
-        </form>
-    </div>
-    <div class="notification" id="notification"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script>
-        document.getElementById('login-btn').addEventListener('click', function(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const notification = document.getElementById('notification');
+        const chess = new Chess();
+        const pieces = document.querySelectorAll('.piece');
+        let selectedPiece = null;
 
-            if (email === 'text@gmail.com' && password === 'user') {
-                notification.textContent = 'Login successful!';
-                notification.className = 'notification success';
-                notification.style.display = 'block';
-                setTimeout(() => {
-                    notification.style.display = 'none';
-                    window.location.href = 'index1.html';
-                }, 3000);
-            } else {
-                notification.textContent = 'Invalid email or password!';
-                notification.className = 'notification error';
-                notification.style.display = 'block';
-                setTimeout(() => {
-                    notification.style.display = 'none';
-                }, 3000);
-            }
+        pieces.forEach(piece => {
+            piece.addEventListener('dragstart', dragStart);
+            piece.addEventListener('click', selectPiece);
         });
 
-        document.getElementById('sign-up-link').addEventListener('click', function() {
-            document.getElementById('login-container').style.display = 'none';
-            document.getElementById('signup-container').style.display = 'block';
+        const squares = document.querySelectorAll('.square');
+        squares.forEach(square => {
+            square.addEventListener('dragover', dragOver);
+            square.addEventListener('drop', drop);
+            square.addEventListener('click', clickToMove);
         });
 
-        document.getElementById('signup-btn').addEventListener('click', function(event) {
-            event.preventDefault();
-            const firstName = document.getElementById('first-name').value;
-            const lastName = document.getElementById('last-name').value;
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('signup-password').value;
-            const email = document.getElementById('signup-email').value;
-
-            if (firstName && lastName && username && validatePassword(password) && email) {
-                const notification = document.getElementById('notification');
-                notification.textContent = 'Sign up successful!';
-                notification.className = 'notification success';
-                notification.style.display = 'block';
-                setTimeout(() => {
-                    notification.style.display = 'none';
-                    window.open('', '_blank').document.write('<h1>Main Page</h1>');
-                }, 3000);
-            } else {
-                const notification = document.getElementById('notification');
-                notification.textContent = 'Please fill all fields correctly!';
-                notification.className = 'notification error';
-                notification.style.display = 'block';
-                setTimeout(() => {
-                    notification.style.display = 'none';
-                }, 3000);
-            }
-        });
-
-        document.getElementById('google-login-btn').addEventListener('click', function() {
-            const notification = document.getElementById('notification');
-            notification.textContent = 'Service not enabled yet';
-            notification.className = 'notification service';
-            notification.style.display = 'block';
+        function dragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.id);
             setTimeout(() => {
-                notification.style.display = 'none';
-            }, 4000);
-        });
-
-        function validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
+                e.target.classList.add('hide');
+            }, 0);
+            showPossibleMoves(e.target);
         }
 
-        function validatePassword(password) {
-            return password.length >= 6; // Example validation
+        function dragOver(e) {
+            e.preventDefault();
         }
 
-        // Disable all keys except for input, textarea, and button elements
-        document.addEventListener('keydown', function(event) {
-            const activeElement = document.activeElement;
-            if (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'TEXTAREA' && activeElement.tagName !== 'BUTTON') {
-                event.preventDefault();
+        function drop(e) {
+            e.preventDefault();
+            const id = e.dataTransfer.getData('text');
+            const piece = document.getElementById(id);
+            const targetSquare = e.target.closest('.square');
+            const from = piece.parentElement.getAttribute('data-square');
+            const to = targetSquare.getAttribute('data-square');
+
+            // Check if it's a pawn promotion move
+            const isPawnPromotion = (piece.id.includes('pawn') && 
+                ((piece.id.includes('white') && to[1] === '8') || 
+                (piece.id.includes('black') && to[1] === '1')));
+
+            if (isPawnPromotion) {
+                const promotionChoice = prompt('Promote to (q=queen, r=rook, b=bishop, n=knight):', 'q');
+                if (!promotionChoice) {
+                    piece.classList.remove('hide');
+                    return; // Cancel the move if no promotion piece selected
+                }
+                const move = chess.move({ 
+                    from, 
+                    to, 
+                    promotion: promotionChoice.toLowerCase() 
+                });
+                
+                if (move) {
+                    if (move.captured) {
+                        addTakenMove(move);
+                        targetSquare.innerHTML = '';
+                    }
+                    promotePawn(piece, move.color, to, promotionChoice.toLowerCase());
+                    updateBoard();
+                    checkGameStatus();
+                } else {
+                    piece.classList.remove('hide');
+                }
+            } else {
+                const move = chess.move({ from, to });
+                if (move) {
+                    if (move.captured) {
+                        addTakenMove(move);
+                        targetSquare.innerHTML = '';
+                    }
+                    targetSquare.appendChild(piece);
+                    piece.classList.remove('hide');
+                    updateBoard();
+                    checkGameStatus();
+                } else {
+                    piece.classList.remove('hide');
+                }
             }
-        });
+        }
 
-        // Disable right click
-        document.addEventListener('contextmenu', function(event) {
-            event.preventDefault();
-        });
+        function selectPiece(e) {
+            const piece = e.target;
+            showPossibleMoves(piece);
+            selectedPiece = piece;
+        }
 
-        // Disable F1 to F12 keys
-        document.addEventListener('keydown', function(event) {
-            if (event.key >= 'F1' && event.key <= 'F12') {
-                event.preventDefault();
+        function showPossibleMoves(piece) {
+            const square = piece.parentElement.getAttribute('data-square');
+            const moves = chess.moves({ square, verbose: true });
+
+            clearHighlights();
+            moves.forEach(move => {
+                const targetSquare = document.querySelector(`[data-square="${move.to}"]`);
+                targetSquare.classList.add('highlight');
+            });
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('.highlight').forEach(square => {
+                square.classList.remove('highlight');
+            });
+        }
+
+        function updateBoard() {
+            clearHighlights();
+            selectedPiece = null;
+        }
+
+        function addTakenMove(move) {
+            const takenMovesList = document.getElementById('takenMovesList');
+            const moveItem = document.createElement('li');
+            const pieceImage = document.createElement('img');
+            pieceImage.src = `https://upload.wikimedia.org/wikipedia/commons/${move.color === 'w' ? '4/45' : 'c/c7'}/Chess_${move.captured}${move.color === 'w' ? 'lt45' : 'dt45'}.svg`;
+            moveItem.appendChild(pieceImage);
+            takenMovesList.appendChild(moveItem);
+        }
+
+        function checkGameStatus() {
+            if (chess.in_checkmate()) {
+                alert('Checkmate! Game over.');
+            } else if (chess.in_draw()) {
+                alert('Draw! Game over.');
+            } else if (chess.in_stalemate()) {
+                alert('Stalemate! Game over.');
+            } else if (chess.in_threefold_repetition()) {
+                alert('Threefold repetition! Game over.');
+            } else if (chess.insufficient_material()) {
+                alert('Insufficient material! Game over.');
+            } else if (chess.in_check()) {
+                alert('Check!');
             }
-        });
+        }
 
-        // Show message "Project is under development" for 3 seconds on page load
-        window.addEventListener('load', function() {
-            const notification = document.getElementById('notification');
-            notification.textContent = 'Project is under development';
-            notification.className = 'notification service';
-            notification.style.display = 'block';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 5000);
+        function promotePawn(piece, color, to, promotionPiece) {
+            const pieceImage = document.createElement('img');
+            let pieceCode;
+            switch(promotionPiece) {
+                case 'q':
+                    pieceCode = color === 'w' ? '1/15' : '4/47';
+                    break;
+                case 'r':
+                    pieceCode = color === 'w' ? '7/72' : 'f/ff';
+                    break;
+                case 'b':
+                    pieceCode = color === 'w' ? 'b/b1' : '9/98';
+                    break;
+                case 'n':
+                    pieceCode = color === 'w' ? '7/70' : 'e/ef';
+                    break;
+                default:
+                    pieceCode = color === 'w' ? '1/15' : '4/47'; // Default to queen
+            }
+            pieceImage.src = `https://upload.wikimedia.org/wikipedia/commons/${pieceCode}/Chess_${promotionPiece}${color === 'w' ? 'lt45' : 'dt45'}.svg`;
+            pieceImage.classList.add('piece');
+            pieceImage.setAttribute('draggable', 'true');
+            pieceImage.setAttribute('id', `${color}-${promotionPiece}-${Date.now()}`);
+            pieceImage.addEventListener('dragstart', dragStart);
+            pieceImage.addEventListener('click', selectPiece);
+            const targetSquare = document.querySelector(`[data-square="${to}"]`);
+            targetSquare.innerHTML = '';
+            targetSquare.appendChild(pieceImage);
+            piece.remove();
+        }
+
+        function clickToMove(e) {
+            const targetSquare = e.target.closest('.square');
+            if (selectedPiece && targetSquare) {
+                const from = selectedPiece.parentElement.getAttribute('data-square');
+                const to = targetSquare.getAttribute('data-square');
+
+                // Check if it's a pawn promotion move
+                const isPawnPromotion = (selectedPiece.id.includes('pawn') && 
+                    ((selectedPiece.id.includes('white') && to[1] === '8') || 
+                    (selectedPiece.id.includes('black') && to[1] === '1')));
+
+                if (isPawnPromotion) {
+                    const promotionChoice = prompt('Promote to (q=queen, r=rook, b=bishop, n=knight):', 'q');
+                    if (!promotionChoice) {
+                        return; // Cancel the move if no promotion piece selected
+                    }
+                    const move = chess.move({ 
+                        from, 
+                        to, 
+                        promotion: promotionChoice.toLowerCase() 
+                    });
+                    
+                    if (move) {
+                        if (move.captured) {
+                            addTakenMove(move);
+                            targetSquare.innerHTML = '';
+                        }
+                        promotePawn(selectedPiece, move.color, to, promotionChoice.toLowerCase());
+                        updateBoard();
+                        checkGameStatus();
+                    }
+                } else {
+                    const move = chess.move({ from, to });
+                    if (move) {
+                        if (move.captured) {
+                            addTakenMove(move);
+                            targetSquare.innerHTML = '';
+                        }
+                        targetSquare.appendChild(selectedPiece);
+                        updateBoard();
+                        checkGameStatus();
+                    }
+                }
+            }
+        }
+
+        // Flip board functionality
+        document.getElementById('flipBoardButton').addEventListener('click', () => {
+            const board = document.getElementById('chessBoard');
+            const squares = Array.from(board.children);
+            squares.reverse().forEach(square => board.appendChild(square));
         });
     </script>
 </body>
